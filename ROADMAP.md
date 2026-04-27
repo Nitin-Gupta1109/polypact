@@ -2,7 +2,7 @@
 
 > Build in phases. After each phase, run all tests, update `DESIGN_NOTES.md` if needed, commit, tag, and stop to confirm before the next phase.
 
-**Current phase: 3**
+**Current phase: 4**
 
 ---
 
@@ -69,21 +69,21 @@
 
 ---
 
-## Phase 3 — Negotiation FSM (Conformance Level 3)
+## Phase 3 — Negotiation FSM (Conformance Level 3) ✅
 
 **Goal:** Agents can negotiate skill use under explicit terms.
 
 **Tasks:**
-- [ ] Implement `polypact.negotiation.schemas` per `PROTOCOL_SPEC.md` §5
-- [ ] Implement `polypact.negotiation.fsm` as a pure function — no I/O
-- [ ] Implement `polypact.negotiation.store` with an in-memory backend behind a Protocol interface
-- [ ] Implement `polypact.negotiation.coordinator` — handles RPC ↔ FSM ↔ store
-- [ ] Wire RPC methods: `polypact.negotiate.propose`, `counter_propose`, `accept`, `reject`
-- [ ] Unit tests covering all FSM transitions including invalid ones
-- [ ] Unit test: round-trip serialize → deserialize an Agreement
-- [ ] Integration test: full negotiation flow with one counter-proposal then accept
-- [ ] Integration test: rejection terminates negotiation cleanly
-- [ ] Integration test: timeout transitions PROPOSED → EXPIRED
+- [x] Implement `polypact.negotiation.schemas` per `PROTOCOL_SPEC.md` §5
+- [x] Implement `polypact.negotiation.fsm` as a pure function — no I/O
+- [x] Implement `polypact.negotiation.store` with an in-memory backend behind a Protocol interface
+- [x] Implement `polypact.negotiation.coordinator` — handles RPC ↔ FSM ↔ store
+- [x] Wire RPC methods: `polypact.negotiate.propose`, `counter_propose`, `accept`, `reject`
+- [x] Unit tests covering all FSM transitions including invalid ones
+- [x] Unit test: round-trip serialize → deserialize an Agreement
+- [x] Integration test: full negotiation flow with one counter-proposal then accept
+- [x] Integration test: rejection terminates negotiation cleanly
+- [x] Integration test: timeout transitions PROPOSED → EXPIRED
 
 **Done when:**
 - FSM unit tests cover every documented transition (valid + invalid)

@@ -1,8 +1,9 @@
 """Polypact server SDK: a FastAPI app factory.
 
 Phase 1 exposed Level-1 discovery (Agent Card + manifest list/fetch). Phase 2
-adds Conformance Level 2: skill-handler registration and the
-``polypact.task.invoke`` and ``polypact.discover.check_composition`` RPCs.
+added Level-2: skill-handler registration and the ``polypact.task.invoke`` /
+``polypact.discover.check_composition`` RPCs. Phase 3 adds Level-3 negotiation:
+``polypact.negotiate.{propose,counter_propose,accept,reject}``.
 """
 
 from __future__ import annotations
@@ -26,6 +27,17 @@ from polypact.manifest import (
     SchemaRelations,
     SkillManifest,
     check_composition,
+)
+from polypact.negotiation import (
+    AcceptRequest,
+    CounterProposeRequest,
+    InMemoryNegotiationStore,
+    NegotiationCoordinator,
+    NegotiationState,
+    NegotiationStatus,
+    NegotiationStore,
+    ProposeRequest,
+    RejectRequest,
 )
 from polypact.transfer import (
     CheckCompositionRequest,
@@ -53,6 +65,7 @@ class PolypactServer:
         base_url: str,
         manifests: Iterable[SkillManifest] = (),
         schema_relations: SchemaRelations | None = None,
+        negotiation_store: NegotiationStore | None = None,
     ) -> None:
         self.agent_id = agent_id
         self.agent_name = agent_name
@@ -64,7 +77,14 @@ class PolypactServer:
         self.schema_relations = schema_relations or SchemaRelations()
         self.dispatcher = Dispatcher()
         self.delegate = DelegatePrimitive(self.registry)
+        self.negotiation_store: NegotiationStore = negotiation_store or InMemoryNegotiationStore()
+        self.negotiations = NegotiationCoordinator(
+            provider_agent_id=self.agent_id,
+            manifests=self.registry,
+            store=self.negotiation_store,
+        )
         self._wire_phase2_rpcs()
+        self._wire_phase3_rpcs()
 
     def register_method(self, method: str, handler: Handler) -> None:
         """Register a JSON-RPC handler. Wraps :meth:`Dispatcher.register`."""
@@ -133,6 +153,52 @@ class PolypactServer:
             "polypact.discover.check_composition",
             discover_check_composition,
         )
+
+    def _wire_phase3_rpcs(self) -> None:
+        """Register the Phase 3 negotiation RPC handlers."""
+
+        async def negotiate_propose(params: dict[str, Any]) -> dict[str, Any]:
+            request = ProposeRequest.model_validate(params)
+            record = self.negotiations.propose(request)
+            return NegotiationStatus(
+                negotiation_id=record.negotiation_id,
+                state=record.state,
+                expires_at=record.expires_at,
+            ).model_dump(mode="json")
+
+        async def negotiate_counter_propose(params: dict[str, Any]) -> dict[str, Any]:
+            request = CounterProposeRequest.model_validate(params)
+            record = self.negotiations.counter_propose(request)
+            return NegotiationStatus(
+                negotiation_id=record.negotiation_id,
+                state=record.state,
+                expires_at=record.expires_at,
+            ).model_dump(mode="json")
+
+        async def negotiate_accept(params: dict[str, Any]) -> dict[str, Any]:
+            request = AcceptRequest.model_validate(params)
+            record = self.negotiations.accept(request)
+            assert record.state == NegotiationState.AGREED
+            assert record.agreement is not None
+            return record.agreement.model_dump(mode="json")
+
+        async def negotiate_reject(params: dict[str, Any]) -> dict[str, Any]:
+            request = RejectRequest.model_validate(params)
+            record = self.negotiations.reject(request)
+            return NegotiationStatus(
+                negotiation_id=record.negotiation_id,
+                state=record.state,
+                expires_at=record.expires_at,
+                rejection_reason=record.rejection_reason,
+            ).model_dump(mode="json")
+
+        self.dispatcher.register("polypact.negotiate.propose", negotiate_propose)
+        self.dispatcher.register(
+            "polypact.negotiate.counter_propose",
+            negotiate_counter_propose,
+        )
+        self.dispatcher.register("polypact.negotiate.accept", negotiate_accept)
+        self.dispatcher.register("polypact.negotiate.reject", negotiate_reject)
 
 
 def create_app(

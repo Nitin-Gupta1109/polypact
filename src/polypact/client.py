@@ -1,8 +1,9 @@
 """Polypact client SDK.
 
 Phase 1 covered Level-1 discovery (Agent Card + manifest list/fetch).
-Phase 2 adds Level-2 calls: ``invoke_skill`` (delegate-mode invocation) and
-``check_composition``.
+Phase 2 added Level-2 calls (``invoke_skill``, ``check_composition``).
+Phase 3 adds Level-3 negotiation primitives: ``propose``, ``counter_propose``,
+``accept``, ``reject``.
 """
 
 from __future__ import annotations
@@ -11,12 +12,25 @@ import uuid
 from types import TracebackType
 from typing import Any, Self
 from urllib.parse import quote
+from uuid import UUID
 
 import httpx
 
 from polypact.discovery import AgentCard
-from polypact.errors import PolypactError, UnknownSkillError
+from polypact.errors import (
+    AuthorizationFailedError,
+    NegotiationStateError,
+    PolypactError,
+    UnknownSkillError,
+)
 from polypact.manifest import CompatibilityReport, ComposeKind, SkillManifest
+from polypact.negotiation import (
+    DEFAULT_NEGOTIATION_TTL_SECONDS,
+    Agreement,
+    NegotiationStatus,
+    ProposedTerms,
+    TransferModeName,
+)
 from polypact.transport import HttpTransport
 from polypact.transport.errors import INTERNAL_ERROR
 
@@ -29,6 +43,8 @@ class RemoteError(PolypactError):
 
 _KNOWN_DOMAIN_CODES: dict[int, type[PolypactError]] = {
     UnknownSkillError.code: UnknownSkillError,
+    NegotiationStateError.code: NegotiationStateError,
+    AuthorizationFailedError.code: AuthorizationFailedError,
 }
 
 
@@ -133,6 +149,82 @@ class PolypactClient:
         }
         result = await self._call(card, "polypact.discover.check_composition", params)
         return CompatibilityReport.model_validate(result)
+
+    async def propose(
+        self,
+        card: AgentCard,
+        *,
+        skill_id: str,
+        transfer_mode: TransferModeName,
+        proposed_terms: ProposedTerms,
+        rationale: str | None = None,
+        negotiation_ttl_seconds: int = DEFAULT_NEGOTIATION_TTL_SECONDS,
+    ) -> NegotiationStatus:
+        """Begin a negotiation by sending an initial proposal."""
+        params = {
+            "agent_id": self.my_agent_id,
+            "trace_id": str(uuid.uuid4()),
+            "skill_id": skill_id,
+            "transfer_mode": transfer_mode,
+            "proposed_terms": proposed_terms.model_dump(mode="json", exclude_none=True),
+            "rationale": rationale,
+            "negotiation_ttl_seconds": negotiation_ttl_seconds,
+        }
+        result = await self._call(card, "polypact.negotiate.propose", params)
+        return NegotiationStatus.model_validate(result)
+
+    async def counter_propose(
+        self,
+        card: AgentCard,
+        *,
+        negotiation_id: UUID,
+        proposed_terms: ProposedTerms,
+        rationale: str | None = None,
+        negotiation_ttl_seconds: int = DEFAULT_NEGOTIATION_TTL_SECONDS,
+    ) -> NegotiationStatus:
+        """Replace the most recent proposal with new terms; resets expiry."""
+        params = {
+            "agent_id": self.my_agent_id,
+            "trace_id": str(uuid.uuid4()),
+            "negotiation_id": str(negotiation_id),
+            "proposed_terms": proposed_terms.model_dump(mode="json", exclude_none=True),
+            "rationale": rationale,
+            "negotiation_ttl_seconds": negotiation_ttl_seconds,
+        }
+        result = await self._call(card, "polypact.negotiate.counter_propose", params)
+        return NegotiationStatus.model_validate(result)
+
+    async def accept(
+        self,
+        card: AgentCard,
+        *,
+        negotiation_id: UUID,
+    ) -> Agreement:
+        """Accept the most recent proposal; returns the canonical Agreement."""
+        params = {
+            "agent_id": self.my_agent_id,
+            "trace_id": str(uuid.uuid4()),
+            "negotiation_id": str(negotiation_id),
+        }
+        result = await self._call(card, "polypact.negotiate.accept", params)
+        return Agreement.model_validate(result)
+
+    async def reject(
+        self,
+        card: AgentCard,
+        *,
+        negotiation_id: UUID,
+        reason: str | None = None,
+    ) -> NegotiationStatus:
+        """Reject the negotiation. Terminal."""
+        params = {
+            "agent_id": self.my_agent_id,
+            "trace_id": str(uuid.uuid4()),
+            "negotiation_id": str(negotiation_id),
+            "reason": reason,
+        }
+        result = await self._call(card, "polypact.negotiate.reject", params)
+        return NegotiationStatus.model_validate(result)
 
     async def _call(
         self,
