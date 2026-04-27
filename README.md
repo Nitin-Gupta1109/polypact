@@ -1,13 +1,36 @@
 # Polypact
 
-> **Research-stage**, **framework-agnostic** protocol for negotiated skill transfer between cross-organization AI agents.
+> A common language for AI assistants from different companies to work together — under terms each side has agreed to and a receipt that proves it.
 
-Polypact is a federation layer. It does **not** replace your agent runtime — whether that's a custom Python agent, a LangGraph workflow, an OpenClaw-style assistant, or anything else. Instead, it gives any of them a common protocol to **discover, negotiate, and share skills across organizational boundaries** under explicit terms.
+## What this is, in plain English
 
-It extends [Google A2A](https://github.com/a2aproject/A2A) with primitives for agents to **lend, teach, and compose** capabilities — going beyond opaque task delegation to support genuine skill sharing across trust boundaries.
+AI assistants — "agents" — are starting to do real work for companies: reading invoices, looking up stock, drafting reports, routing shipments. Each company tends to build or buy its own.
 
+The trouble starts when **one company's agent needs help from another company's agent**. Today there's no standard way for them to:
 
-## What's different
+- introduce themselves and prove who they are,
+- agree on what's allowed, for how long, and at what price,
+- actually hand work off — or hand over a *recipe* so the other side can do it themselves.
+
+**Polypact is the protocol that lets them do this.** Think of it as a contract negotiation between two AI agents that runs automatically, takes a fraction of a second, and ends with a digitally signed receipt both sides can audit later.
+
+There are three ways one agent can share what it knows how to do:
+
+| Mode | Everyday analogy |
+|---|---|
+| **Lease** | "You can use my service 50 times this hour for $X." Like a metered API plan. |
+| **Teach** | "Here's the recipe — run it yourself." Like sharing a cookbook page under a license. |
+| **Compose** | "Stitch my step into your pipeline; together we deliver one finished result." Like a supply chain. |
+
+Every agreement is cryptographically signed, so neither side can later deny what was agreed. Every agent has a verifiable identity (a [DID](https://www.w3.org/TR/did-1.0/)), so you always know who you're dealing with.
+
+> **Status:** research-stage reference implementation. The protocol works end-to-end across all three modes; no production deployments yet. See [Status](#status) for the build phase.
+
+---
+
+## What's different (for technical readers)
+
+Polypact is a **framework-agnostic** protocol — it doesn't replace your agent runtime (LangGraph, AutoGen, custom Python, etc.); it sits in front of it as a thin adapter. It extends [Google A2A](https://github.com/a2aproject/A2A) with the primitives below, going beyond opaque task delegation.
 
 | | A2A / ACP | Polypact |
 |---|---|---|
