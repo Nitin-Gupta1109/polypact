@@ -1,0 +1,21 @@
+title: Polypact
+description: >-
+  Research protocol for negotiated skill transfer between cross-organization
+  AI agents. Extends Google A2A with lease, teach, and compose primitives
+  plus DID-based identity.
+theme: jekyll-theme-cayman
+show_downloads: false
+google_analytics: ""
+
+# Skip files that aren't part of the public site.
+exclude:
+  - Makefile
+  - pyproject.toml
+  - uv.lock
+  - tests/
+  - .github/
+  - .venv/
+  - .ruff_cache/
+  - .mypy_cache/
+  - .pytest_cache/
+  - __pycache__/
