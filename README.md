@@ -165,13 +165,9 @@ polypact/
 | 4 — Transfer Primitives + Identity (L4) | ✅ |
 | 5 — Case Studies | ✅ |
 | 5b — Reference Adapter | 🚧 |
-| 6 — Paper Artifacts | 🚧 |
 
 82 tests pass; `mypy --strict` and `ruff` clean across the codebase.
 
-## Citing
-
-A preprint will be available on arXiv. Citation details TBD.
 
 ## License
 
