@@ -2,7 +2,7 @@
 
 > Build in phases. After each phase, run all tests, update `DESIGN_NOTES.md` if needed, commit, tag, and stop to confirm before the next phase.
 
-**Current phase: 5**
+**Current phase: 5b**
 
 ---
 
@@ -115,15 +115,15 @@
 
 ---
 
-## Phase 5 — Case Studies
+## Phase 5 — Case Studies ✅
 
 **Goal:** Three runnable examples demonstrating Polypact's value, suitable for inclusion in the paper.
 
 **Tasks:**
-- [ ] `examples/01_invoice_extraction/` — **Lease scenario.** A finance agent leases a document agent's invoice extractor for 50 invocations, paying per use.
-- [ ] `examples/02_research_assistant/` — **Teach scenario.** A specialist research agent transfers a literature-review prompt template to a generalist orchestrator, which then runs it locally.
-- [ ] `examples/03_logistics_pipeline/` — **Compose scenario.** Three agents (routing, inventory, ETA) compose into a unified fulfillment pipeline visible to a client agent as one skill.
-- [ ] Each example: `README.md`, runnable `main.py`, sample data, expected output
+- [x] `examples/01_invoice_extraction/` — **Lease scenario.** A finance agent leases a document agent's invoice extractor for 50 invocations, paying per use.
+- [x] `examples/02_research_assistant/` — **Teach scenario.** A specialist research agent transfers a literature-review prompt template to a generalist orchestrator, which then runs it locally.
+- [x] `examples/03_logistics_pipeline/` — **Compose scenario.** Three agents (routing, inventory, ETA) compose into a unified fulfillment pipeline visible to a client agent as one skill.
+- [x] Each example: `README.md`, runnable `main.py`, sample data, expected output
 - [ ] All three examples cited in the paper
 
 **Done when:**
