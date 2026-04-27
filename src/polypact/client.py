@@ -18,11 +18,14 @@ import httpx
 
 from polypact.discovery import AgentCard
 from polypact.errors import (
+    AgreementViolatedError,
     AuthorizationFailedError,
+    CapabilityMismatchError,
     NegotiationStateError,
     PolypactError,
     UnknownSkillError,
 )
+from polypact.identity import DidResolver
 from polypact.manifest import CompatibilityReport, ComposeKind, SkillManifest
 from polypact.negotiation import (
     DEFAULT_NEGOTIATION_TTL_SECONDS,
@@ -31,6 +34,7 @@ from polypact.negotiation import (
     ProposedTerms,
     TransferModeName,
 )
+from polypact.transfer import TeachResult
 from polypact.transport import HttpTransport
 from polypact.transport.errors import INTERNAL_ERROR
 
@@ -45,6 +49,8 @@ _KNOWN_DOMAIN_CODES: dict[int, type[PolypactError]] = {
     UnknownSkillError.code: UnknownSkillError,
     NegotiationStateError.code: NegotiationStateError,
     AuthorizationFailedError.code: AuthorizationFailedError,
+    AgreementViolatedError.code: AgreementViolatedError,
+    CapabilityMismatchError.code: CapabilityMismatchError,
 }
 
 
@@ -208,6 +214,92 @@ class PolypactClient:
         }
         result = await self._call(card, "polypact.negotiate.accept", params)
         return Agreement.model_validate(result)
+
+    async def invoke_with_agreement(
+        self,
+        card: AgentCard,
+        *,
+        agreement: Agreement,
+        payload: dict[str, Any],
+    ) -> dict[str, Any]:
+        """Invoke ``agreement.skill_id`` against an accepted agreement.
+
+        Used for delegate and lease modes. The provider validates the
+        agreement is live, the caller is a party, and (for lease) the
+        invocation budget is not exhausted.
+        """
+        params = {
+            "agent_id": self.my_agent_id,
+            "trace_id": str(uuid.uuid4()),
+            "agreement_id": str(agreement.agreement_id),
+            "input": payload,
+        }
+        result = await self._call(card, "polypact.task.invoke", params)
+        output: dict[str, Any] = result["output"]
+        return output
+
+    async def transfer_teach(
+        self,
+        card: AgentCard,
+        *,
+        agreement: Agreement,
+    ) -> TeachResult:
+        """Receive a teach artifact for an accepted teach agreement (§6.3)."""
+        params = {
+            "agent_id": self.my_agent_id,
+            "trace_id": str(uuid.uuid4()),
+            "agreement_id": str(agreement.agreement_id),
+        }
+        result = await self._call(card, "polypact.transfer.teach", params)
+        return TeachResult.model_validate(result)
+
+    async def transfer_compose(
+        self,
+        card: AgentCard,
+        *,
+        agreement: Agreement,
+    ) -> SkillManifest:
+        """Receive the synthesized composite manifest for a compose agreement (§6.4)."""
+        params = {
+            "agent_id": self.my_agent_id,
+            "trace_id": str(uuid.uuid4()),
+            "agreement_id": str(agreement.agreement_id),
+        }
+        result = await self._call(card, "polypact.transfer.compose", params)
+        return SkillManifest.model_validate(result)
+
+    async def verify_agreement(
+        self,
+        agreement: Agreement,
+        *,
+        resolver: DidResolver,
+    ) -> None:
+        """Verify the provider's signature on ``agreement`` against their DID document.
+
+        Raises :class:`AuthorizationFailedError` if the signature is missing,
+        unparsable, or doesn't verify. Callers SHOULD invoke this before
+        honoring an agreement they received from the wire.
+        """
+        provider = agreement.parties.provider
+        jws = agreement.signatures.get(provider)
+        if jws is None:
+            msg = f"agreement {agreement.agreement_id} missing provider signature"
+            raise AuthorizationFailedError(msg)
+        document = await resolver.resolve(provider)
+        from polypact.identity.signing import split_jws, verify
+
+        header, _payload, _signature = split_jws(jws)
+        kid = header.get("kid")
+        if not isinstance(kid, str):
+            msg = "JWS header is missing a string 'kid'"
+            raise AuthorizationFailedError(msg)
+        public_key = document.find_key(kid)
+        verified_payload = verify(jws, public_key=public_key)
+        # Cross-check: signed payload must equal the agreement (sans signatures).
+        expected = agreement.model_dump(mode="json", exclude={"signatures"})
+        if verified_payload != expected:
+            msg = "signed agreement payload does not match the received agreement"
+            raise AuthorizationFailedError(msg)
 
     async def reject(
         self,

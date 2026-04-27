@@ -14,19 +14,58 @@ for ``delegate`` mode (which is "no state retained" per §6.1) but not for
 from __future__ import annotations
 
 from typing import Any
+from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 class InvokeRequest(BaseModel):
-    """Params block for ``polypact.task.invoke`` (Phase 2 form)."""
+    """Params block for ``polypact.task.invoke``.
+
+    Phase 4 made the request agreement-gated: callers SHOULD pass
+    ``agreement_id`` to invoke against an accepted agreement. The
+    ``skill_id``-only form remains valid as the §6.1 baseline (delegate mode,
+    "no state retained") and is the path Phase 2 tests still take. Lease
+    invocations require ``agreement_id``.
+    """
 
     model_config = ConfigDict(extra="forbid")
 
     agent_id: str = Field(..., description="Caller's DID, per ``PROTOCOL_SPEC.md`` §2.2.")
     trace_id: str = Field(..., description="UUID for correlating logs across the call.")
-    skill_id: str = Field(..., description="DID-with-fragment ID of the skill being invoked.")
+    agreement_id: UUID | None = Field(default=None, description="Accepted agreement.")
+    skill_id: str | None = Field(
+        default=None,
+        description="Direct skill ID — only valid for delegate-mode baseline.",
+    )
     input: dict[str, Any] = Field(..., description="Skill-specific input payload.")
+
+    @model_validator(mode="after")
+    def _exactly_one_target(self) -> InvokeRequest:
+        if (self.agreement_id is None) == (self.skill_id is None):
+            msg = "InvokeRequest requires exactly one of agreement_id or skill_id"
+            raise ValueError(msg)
+        return self
+
+
+class TeachRequest(BaseModel):
+    """Params block for ``polypact.transfer.teach`` (PROTOCOL_SPEC.md §6.3)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    agent_id: str
+    trace_id: str
+    agreement_id: UUID
+
+
+class ComposeRequest(BaseModel):
+    """Params block for ``polypact.transfer.compose`` (PROTOCOL_SPEC.md §6.4)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    agent_id: str
+    trace_id: str
+    agreement_id: UUID
 
 
 class InvokeResult(BaseModel):

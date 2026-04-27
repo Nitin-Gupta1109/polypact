@@ -10,12 +10,15 @@ from __future__ import annotations
 
 import logging
 from datetime import datetime
+from typing import Any
 from uuid import UUID
 
 from polypact.errors import (
     AuthorizationFailedError,
     UnknownSkillError,
 )
+from polypact.identity.keys import AgentKeypair
+from polypact.identity.signing import sign as sign_jws
 from polypact.manifest.registry import ManifestStore
 from polypact.negotiation.fsm import _maybe_expire, initial, now_utc, step
 from polypact.negotiation.schemas import (
@@ -49,10 +52,18 @@ class NegotiationCoordinator:
         provider_agent_id: str,
         manifests: ManifestStore,
         store: NegotiationStore,
+        signing_key: AgentKeypair | None = None,
     ) -> None:
         self.provider_agent_id = provider_agent_id
         self._manifests = manifests
         self._store = store
+        self._signing_key = signing_key
+
+    def _signer(self, payload: dict[str, Any]) -> dict[str, str]:
+        """Sign ``payload`` with the provider's keypair, if configured."""
+        if self._signing_key is None:
+            return {}
+        return {self.provider_agent_id: sign_jws(payload, keypair=self._signing_key)}
 
     def get(self, negotiation_id: UUID, *, now: datetime | None = None) -> NegotiationRecord:
         """Return a record, applying lazy expiry."""
@@ -204,7 +215,7 @@ class NegotiationCoordinator:
         previous_state = record.state
         if refresh_first:
             record = self._refresh(record, when)
-        new_record = step(record, event, now=when)  # type: ignore[arg-type]
+        new_record = step(record, event, now=when, signer=self._signer)  # type: ignore[arg-type]
         self._store.put(new_record)
         logger.info(
             "negotiation.transition",

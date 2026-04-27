@@ -2,7 +2,7 @@
 
 > Build in phases. After each phase, run all tests, update `DESIGN_NOTES.md` if needed, commit, tag, and stop to confirm before the next phase.
 
-**Current phase: 4**
+**Current phase: 5**
 
 ---
 
@@ -92,21 +92,21 @@
 
 ---
 
-## Phase 4 — Transfer Primitives (Conformance Level 4)
+## Phase 4 — Transfer Primitives (Conformance Level 4) ✅
 
 **Goal:** All four transfer modes work end-to-end.
 
 **Tasks:**
-- [ ] Implement `polypact.transfer.lease` with invocation counting and TTL
-- [ ] Lease invocations decrement and reject when exhausted
-- [ ] Implement `polypact.transfer.teach` with artifact packaging
-- [ ] Implement `polypact.transfer.compose` with type-checked sequential and parallel pipelines
-- [ ] Implement `polypact.transfer.invoker` to route based on agreement transfer_mode
-- [ ] Phase 4 identity work: `did:web` resolution, Ed25519 signing of agreements
-- [ ] Replace identity stubs; add signature verification before honoring agreements
-- [ ] Integration tests for each primitive (one per mode)
-- [ ] Integration test: lease expiry rejects further invocations with -32003
-- [ ] Integration test: composition with mismatched I/O types rejected with -32004
+- [x] Implement `polypact.transfer.lease` with invocation counting and TTL
+- [x] Lease invocations decrement and reject when exhausted
+- [x] Implement `polypact.transfer.teach` with artifact packaging
+- [x] Implement `polypact.transfer.compose` with type-checked sequential and parallel pipelines
+- [x] Implement `polypact.transfer.invoker` to route based on agreement transfer_mode
+- [x] Phase 4 identity work: `did:web` resolution, Ed25519 signing of agreements
+- [x] Replace identity stubs; add signature verification before honoring agreements
+- [x] Integration tests for each primitive (one per mode)
+- [x] Integration test: lease expiry rejects further invocations with -32003
+- [x] Integration test: composition with mismatched I/O types rejected with -32004
 
 **Done when:**
 - All four transfer modes have passing integration tests
