@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 660" font-family="ui-sans-serif, system-ui, sans-serif">
+  <style>
+    .actor { fill: #e0f2fe; stroke: #0369a1; stroke-width: 1.5; }
+    .lifeline { stroke: #94a3b8; stroke-width: 1; stroke-dasharray: 4 4; }
+    .msg { fill: none; stroke: #1e293b; stroke-width: 1.5; }
+    .msg-return { stroke-dasharray: 5 4; }
+    .label { font-size: 13px; font-weight: 700; fill: #0f172a; }
+    .msg-label { font-size: 12px; fill: #1e293b; }
+    .phase { font-size: 11px; fill: #475569; font-style: italic; }
+    .title { font-size: 16px; font-weight: 700; fill: #0f172a; }
+    .replay { font-size: 10px; fill: #94a3b8; font-style: italic; }
+  </style>
+
+  <text x="380" y="28" text-anchor="middle" class="title">Message flow: lease scenario (animated)</text>
+  <text x="380" y="46" text-anchor="middle" class="replay">propose → counter → accept → verify → invoke under budget</text>
+
+  <!-- Static actor boxes & lifelines -->
+  <rect x="80" y="60" width="180" height="40" rx="8" class="actor" />
+  <text x="170" y="86" text-anchor="middle" class="label">Initiator (CompanyA)</text>
+
+  <rect x="500" y="60" width="180" height="40" rx="8" class="actor" />
+  <text x="590" y="86" text-anchor="middle" class="label">Provider (CompanyB)</text>
+
+  <line x1="170" y1="100" x2="170" y2="640" class="lifeline" />
+  <line x1="590" y1="100" x2="590" y2="640" class="lifeline" />
+
+  <!-- Phase labels (always visible) -->
+  <text x="40" y="135" class="phase">Discovery</text>
+  <text x="40" y="270" class="phase">Negotiation</text>
+  <text x="40" y="475" class="phase">Verification</text>
+  <text x="40" y="545" class="phase">Invocation</text>
+
+  <!-- Each <g class="step"> below is one message exchange. Its opacity is
+       animated so it appears in sequence and the whole sequence loops. The
+       SMIL timing assumes a 22s cycle with 1s stagger between steps. -->
+
+  <!-- Step 1: GET /.well-known/agent.json (forward) + AgentCard return -->
+  <g opacity="0">
+    <line x1="170" y1="130" x2="590" y2="130" class="msg" marker-end="url(#arr)" />
+    <text x="380" y="123" text-anchor="middle" class="msg-label">GET /.well-known/agent.json</text>
+    <line x1="590" y1="160" x2="170" y2="160" class="msg msg-return" marker-end="url(#arr)" />
+    <text x="380" y="153" text-anchor="middle" class="msg-label">AgentCard (with polypact extension)</text>
+    <animate attributeName="opacity"
+             values="0;0;1;1;0;0"
+             keyTimes="0;0.000;0.018;0.864;0.909;1"
+             dur="22s" repeatCount="indefinite" />
+  </g>
+
+  <!-- Step 2: GET /polypact/v1/manifests + manifest list return -->
+  <g opacity="0">
+    <line x1="170" y1="195" x2="590" y2="195" class="msg" marker-end="url(#arr)" />
+    <text x="380" y="188" text-anchor="middle" class="msg-label">GET /polypact/v1/manifests</text>
+    <line x1="590" y1="225" x2="170" y2="225" class="msg msg-return" marker-end="url(#arr)" />
+    <text x="380" y="218" text-anchor="middle" class="msg-label">[ SkillManifest ]</text>
+    <animate attributeName="opacity"
+             values="0;0;1;1;0;0"
+             keyTimes="0;0.064;0.082;0.864;0.909;1"
+             dur="22s" repeatCount="indefinite" />
+  </g>
+
+  <!-- Step 3: propose -->
+  <g opacity="0">
+    <line x1="170" y1="260" x2="590" y2="260" class="msg" marker-end="url(#arr)" />
+    <text x="380" y="253" text-anchor="middle" class="msg-label">polypact.negotiate.propose { skill, mode, terms }</text>
+    <line x1="590" y1="290" x2="170" y2="290" class="msg msg-return" marker-end="url(#arr)" />
+    <text x="380" y="283" text-anchor="middle" class="msg-label">{ negotiation_id, state: PROPOSED, expires_at }</text>
+    <animate attributeName="opacity"
+             values="0;0;1;1;0;0"
+             keyTimes="0;0.127;0.145;0.864;0.909;1"
+             dur="22s" repeatCount="indefinite" />
+  </g>
+
+  <!-- Step 4: counter_propose -->
+  <g opacity="0">
+    <line x1="170" y1="325" x2="590" y2="325" class="msg" marker-end="url(#arr)" />
+    <text x="380" y="318" text-anchor="middle" class="msg-label">polypact.negotiate.counter_propose { new terms }</text>
+    <line x1="590" y1="355" x2="170" y2="355" class="msg msg-return" marker-end="url(#arr)" />
+    <text x="380" y="348" text-anchor="middle" class="msg-label">{ state: PROPOSED, expires_at: reset }</text>
+    <animate attributeName="opacity"
+             values="0;0;1;1;0;0"
+             keyTimes="0;0.191;0.209;0.864;0.909;1"
+             dur="22s" repeatCount="indefinite" />
+  </g>
+
+  <!-- Step 5: accept -->
+  <g opacity="0">
+    <line x1="170" y1="390" x2="590" y2="390" class="msg" marker-end="url(#arr)" />
+    <text x="380" y="383" text-anchor="middle" class="msg-label">polypact.negotiate.accept</text>
+    <line x1="590" y1="420" x2="170" y2="420" class="msg msg-return" marker-end="url(#arr)" />
+    <text x="380" y="413" text-anchor="middle" class="msg-label">Agreement (signed: provider Ed25519/JWS)</text>
+    <animate attributeName="opacity"
+             values="0;0;1;1;0;0"
+             keyTimes="0;0.255;0.273;0.864;0.909;1"
+             dur="22s" repeatCount="indefinite" />
+  </g>
+
+  <!-- Step 6: GET DID document -->
+  <g opacity="0">
+    <line x1="170" y1="465" x2="590" y2="465" class="msg" marker-end="url(#arr)" />
+    <text x="380" y="458" text-anchor="middle" class="msg-label">GET /.well-known/did.json (provider DID document)</text>
+    <line x1="590" y1="495" x2="170" y2="495" class="msg msg-return" marker-end="url(#arr)" />
+    <text x="380" y="488" text-anchor="middle" class="msg-label">DidDocument with verificationMethod</text>
+    <animate attributeName="opacity"
+             values="0;0;1;1;0;0"
+             keyTimes="0;0.318;0.336;0.864;0.909;1"
+             dur="22s" repeatCount="indefinite" />
+  </g>
+
+  <!-- Step 7: invoke (success) -->
+  <g opacity="0">
+    <line x1="170" y1="540" x2="590" y2="540" class="msg" marker-end="url(#arr)" />
+    <text x="380" y="533" text-anchor="middle" class="msg-label">polypact.task.invoke { agreement_id, input } × N</text>
+    <line x1="590" y1="570" x2="170" y2="570" class="msg msg-return" marker-end="url(#arr)" />
+    <text x="380" y="563" text-anchor="middle" class="msg-label">{ output }   (lease budget decremented server-side)</text>
+    <animate attributeName="opacity"
+             values="0;0;1;1;0;0"
+             keyTimes="0;0.382;0.4;0.864;0.909;1"
+             dur="22s" repeatCount="indefinite" />
+  </g>
+
+  <!-- Step 8: invoke #(N+1) → -32003 -->
+  <g opacity="0">
+    <line x1="170" y1="610" x2="590" y2="610" class="msg" marker-end="url(#arr)" />
+    <text x="380" y="603" text-anchor="middle" class="msg-label" fill="#b91c1c" font-weight="600">invoke #(max+1) → -32003 Agreement violated (exhausted)</text>
+    <animate attributeName="opacity"
+             values="0;0;1;1;0;0"
+             keyTimes="0;0.491;0.509;0.864;0.909;1"
+             dur="22s" repeatCount="indefinite" />
+  </g>
+
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#1e293b" />
+    </marker>
+  </defs>
+</svg>

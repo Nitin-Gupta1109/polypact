@@ -67,9 +67,21 @@ Every negotiation goes through an explicit state machine. Each transition emits 
 
 ## End-to-end message flow
 
-A typical lease flow: discover → negotiate → verify the signed agreement → invoke under budget.
+A typical lease flow: discover → negotiate → verify the signed agreement → invoke under budget. The diagram below loops the full sequence.
 
-![Message flow](docs/diagrams/message_flow.svg)
+![Message flow](docs/diagrams/message_flow_animated.svg)
+
+## See it run
+
+The lease case study, end-to-end: discovery, counter-proposal, signed agreement, 50 invocations under budget, and the 51st rejected with `-32003 Agreement violated`.
+
+![Invoice extraction case study](docs/casts/invoice_extraction.gif)
+
+Reproduce locally:
+
+```bash
+uv run python -m examples.01_invoice_extraction.main
+```
 
 ## Quick start
 
