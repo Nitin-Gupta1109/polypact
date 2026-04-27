@@ -1,12 +1,12 @@
 # Polypact
 
-> A common language for AI assistants from different companies to work together — under terms each side has agreed to and a receipt that proves it.
+> A common language for AI agents under different ownership — companies, teams, or individuals — to work together under terms each side has agreed to, with a receipt that proves it.
 
 ## What this is, in plain English
 
-AI assistants — "agents" — are starting to do real work for companies: reading invoices, looking up stock, drafting reports, routing shipments. Each company tends to build or buy its own.
+AI assistants — "agents" — are starting to do real work: reading invoices, looking up stock, drafting reports, routing shipments. They get built or bought by all kinds of operators — companies, teams inside companies, public services, even individual developers running their own.
 
-The trouble starts when **one company's agent needs help from another company's agent**. Today there's no standard way for them to:
+The trouble starts when **one agent needs help from another agent that someone else controls** — say, a different company, a different team, or another person altogether. Today there's no standard way for them to:
 
 - introduce themselves and prove who they are,
 - agree on what's allowed, for how long, and at what price,
@@ -40,7 +40,7 @@ Polypact is a **framework-agnostic** protocol — it doesn't replace your agent 
 | **Skill leasing** | ❌ | ✅ (budget-bounded, time-bounded) |
 | **Skill teaching** (artifact transfer) | ❌ | ✅ (under license) |
 | **Type-checked composition** | ❌ | ✅ (sequential & parallel) |
-| Cross-org identity | partial | DID-based (Ed25519 / did:web) |
+| Cross-boundary identity | partial | DID-based (Ed25519 / did:web) |
 | Framework-agnostic | partial | ✅ (adapter-based) |
 
 ## Architecture
