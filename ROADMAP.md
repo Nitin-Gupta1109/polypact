@@ -2,43 +2,43 @@
 
 > Build in phases. After each phase, run all tests, update `DESIGN_NOTES.md` if needed, commit, tag, and stop to confirm before the next phase.
 
-**Current phase: 0**
+**Current phase: 2**
 
 ---
 
-## Phase 0 — Project Initialization
+## Phase 0 — Project Initialization ✅
 
 **Goal:** Working Python project skeleton.
 
 **Tasks:**
-- [ ] Initialize repo with `pyproject.toml` (Python 3.11+, dependencies as listed in `INSTRUCTIONS.md`)
-- [ ] Set up `ruff`, `mypy`, `pytest` configs
-- [ ] Create empty package skeleton matching the layout in `INSTRUCTIONS.md`
-- [ ] Add `Makefile` (or `justfile`) with: `install`, `test`, `lint`, `format`, `typecheck`
-- [ ] Add `.gitignore`, `.github/workflows/ci.yml` (test + lint on push)
-- [ ] Create `DESIGN_NOTES.md` with a header section ready for entries
-- [ ] First commit: `chore: initialize project skeleton`
+- [x] Initialize repo with `pyproject.toml` (Python 3.11+, dependencies as listed in `INSTRUCTIONS.md`)
+- [x] Set up `ruff`, `mypy`, `pytest` configs
+- [x] Create empty package skeleton matching the layout in `INSTRUCTIONS.md`
+- [x] Add `Makefile` (or `justfile`) with: `install`, `test`, `lint`, `format`, `typecheck`
+- [x] Add `.gitignore`, `.github/workflows/ci.yml` (test + lint on push)
+- [x] Create `DESIGN_NOTES.md` with a header section ready for entries
+- [x] First commit: `chore: initialize project skeleton`
 
 **Done when:** `make install && make test && make lint && make typecheck` all pass on an empty project.
 
 ---
 
-## Phase 1 — Manifests + Transport (Conformance Level 1)
+## Phase 1 — Manifests + Transport (Conformance Level 1) ✅
 
 **Goal:** Agents can advertise and discover skill manifests over HTTP.
 
 **Tasks:**
-- [ ] Implement `polypact.manifest.schemas` — all Pydantic models from `PROTOCOL_SPEC.md` §3
-- [ ] Implement `polypact.manifest.validation` — beyond-schema rules
-- [ ] Unit tests for manifest schemas (valid examples, invalid examples, edge cases)
-- [ ] Implement `polypact.transport.jsonrpc` — encode/decode/dispatch
-- [ ] Implement `polypact.transport.http_server` — FastAPI mount point
-- [ ] Implement `polypact.transport.http_client` — httpx wrapper
-- [ ] Implement `polypact.discovery.agent_card` — `/.well-known/agent.json` with polypact extension
-- [ ] Implement `polypact.discovery.manifests` — list and fetch endpoints
-- [ ] Implement minimal `polypact.server.create_app`
-- [ ] Implement minimal `polypact.client` with `fetch_agent_card` and `list_manifests`
-- [ ] Integration test: `tests/integration/test_discovery.py` — Agent A discovers Agent B's manifests end-to-end
+- [x] Implement `polypact.manifest.schemas` — all Pydantic models from `PROTOCOL_SPEC.md` §3
+- [x] Implement `polypact.manifest.validation` — beyond-schema rules
+- [x] Unit tests for manifest schemas (valid examples, invalid examples, edge cases)
+- [x] Implement `polypact.transport.jsonrpc` — encode/decode/dispatch
+- [x] Implement `polypact.transport.http_server` — FastAPI mount point
+- [x] Implement `polypact.transport.http_client` — httpx wrapper
+- [x] Implement `polypact.discovery.agent_card` — `/.well-known/agent.json` with polypact extension
+- [x] Implement `polypact.discovery.manifests` — list and fetch endpoints
+- [x] Implement minimal `polypact.server.create_app`
+- [x] Implement minimal `polypact.client` with `fetch_agent_card` and `list_manifests`
+- [x] Integration test: `tests/integration/test_discovery.py` — Agent A discovers Agent B's manifests end-to-end
 
 **Done when:**
 - All tests pass

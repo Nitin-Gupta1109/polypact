@@ -60,11 +60,16 @@ select = [
 ignore = [
     "D203",  # one-blank-line-before-class (conflicts with D211)
     "D213",  # multi-line-summary-second-line (conflicts with D212)
+    "D105",  # docstring on magic methods (self-documenting)
+    "D107",  # docstring on __init__ (covered by class docstring)
 ]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**/*.py" = ["D", "ANN"]
-"examples/**/*.py" = ["D", "ANN"]
+"examples/**/*.py" = ["D", "ANN", "N999"]
+# JSON-RPC payloads are structurally `Any`; suppressing ANN401 only here.
+"src/polypact/transport/jsonrpc.py" = ["ANN401"]
+"src/polypact/transport/http_client.py" = ["ANN401"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
