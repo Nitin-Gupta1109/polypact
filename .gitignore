@@ -49,3 +49,11 @@ uv.lock
 # Generated docs
 docs/_build/
 site/
+
+# Local-only working docs (not for public distribution)
+ARCHITECTURE.md
+CLAUDE.md
+DESIGN_NOTES.md
+FUTURE_WORK.md
+INSTRUCTIONS.md
+PROTOCOL_SPEC.md
