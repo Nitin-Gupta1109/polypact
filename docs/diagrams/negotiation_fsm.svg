@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 520" font-family="ui-sans-serif, system-ui, sans-serif">
+  <style>
+    .state { fill: #f0f9ff; stroke: #0369a1; stroke-width: 1.5; }
+    .terminal { fill: #fef2f2; stroke: #b91c1c; }
+    .agreed { fill: #ecfdf5; stroke: #047857; }
+    .start { fill: #fff7ed; stroke: #c2410c; }
+    .label { font-size: 13px; fill: #0f172a; font-weight: 600; }
+    .edge { fill: none; stroke: #475569; stroke-width: 1.5; }
+    .edge-label { font-size: 11px; fill: #1e293b; font-style: italic; }
+    .title { font-size: 16px; font-weight: 700; fill: #0f172a; }
+    .legend { font-size: 11px; fill: #475569; }
+  </style>
+
+  <text x="410" y="28" text-anchor="middle" class="title">Negotiation FSM (PROTOCOL_SPEC.md §5.1)</text>
+
+  <!-- propose start arrow -->
+  <text x="60" y="105" class="edge-label" font-style="normal" font-weight="600">propose</text>
+  <path d="M 100 110 L 250 110" class="edge" marker-end="url(#arr)" />
+
+  <!-- PROPOSED -->
+  <rect x="260" y="80" width="140" height="60" rx="10" class="state start" />
+  <text x="330" y="115" text-anchor="middle" class="label">PROPOSED</text>
+
+  <!-- self-loop counter_propose -->
+  <path d="M 330 80 C 280 30, 380 30, 330 80" class="edge" marker-end="url(#arr)" />
+  <text x="330" y="22" text-anchor="middle" class="edge-label">counter_propose</text>
+
+  <!-- accept → AGREED -->
+  <path d="M 400 110 L 530 110" class="edge" marker-end="url(#arr)" />
+  <text x="465" y="100" text-anchor="middle" class="edge-label">accept</text>
+
+  <!-- AGREED -->
+  <rect x="540" y="80" width="120" height="60" rx="10" class="state agreed" />
+  <text x="600" y="115" text-anchor="middle" class="label">AGREED</text>
+
+  <!-- reject → REJECTED -->
+  <path d="M 330 140 L 130 230" class="edge" marker-end="url(#arr)" />
+  <text x="190" y="195" class="edge-label">reject</text>
+
+  <rect x="40" y="220" width="140" height="60" rx="10" class="state terminal" />
+  <text x="110" y="255" text-anchor="middle" class="label">REJECTED</text>
+
+  <!-- timeout → EXPIRED (from PROPOSED) -->
+  <path d="M 270 140 L 260 230" class="edge" stroke-dasharray="5 4" marker-end="url(#arr)" />
+  <text x="225" y="195" class="edge-label">timeout</text>
+
+  <!-- AGREED → EXECUTING (Phase 4 wired by invoke) -->
+  <path d="M 600 140 L 600 230" class="edge" marker-end="url(#arr)" />
+  <text x="612" y="190" class="edge-label">first invoke</text>
+
+  <rect x="540" y="230" width="120" height="60" rx="10" class="state" />
+  <text x="600" y="265" text-anchor="middle" class="label">EXECUTING</text>
+
+  <!-- EXECUTING → DONE / ABORTED / EXPIRED -->
+  <path d="M 540 270 L 380 350" class="edge" marker-end="url(#arr)" />
+  <text x="430" y="320" class="edge-label">complete</text>
+
+  <path d="M 600 290 L 600 360" class="edge" marker-end="url(#arr)" />
+  <text x="612" y="320" class="edge-label">abort</text>
+
+  <path d="M 660 270 L 760 360" class="edge" stroke-dasharray="5 4" marker-end="url(#arr)" />
+  <text x="730" y="320" class="edge-label">timeout</text>
+
+  <rect x="280" y="360" width="120" height="60" rx="10" class="state terminal" />
+  <text x="340" y="395" text-anchor="middle" class="label">DONE</text>
+
+  <rect x="540" y="360" width="120" height="60" rx="10" class="state terminal" />
+  <text x="600" y="395" text-anchor="middle" class="label">ABORTED</text>
+
+  <rect x="700" y="360" width="100" height="60" rx="10" class="state terminal" />
+  <text x="750" y="395" text-anchor="middle" class="label">EXPIRED</text>
+
+  <!-- shared EXPIRED for PROPOSED-timeout (we already drew one for EXECUTING; consolidate visually with a second EXPIRED at the left) -->
+  <rect x="200" y="220" width="120" height="60" rx="10" class="state terminal" />
+  <text x="260" y="255" text-anchor="middle" class="label">EXPIRED</text>
+
+  <!-- Legend -->
+  <g transform="translate(40, 460)">
+    <rect x="0" y="0" width="14" height="14" class="state start" />
+    <text x="20" y="11" class="legend">initial / transit (PROPOSED, EXECUTING)</text>
+    <rect x="240" y="0" width="14" height="14" class="state agreed" />
+    <text x="260" y="11" class="legend">agreed</text>
+    <rect x="320" y="0" width="14" height="14" class="state terminal" />
+    <text x="340" y="11" class="legend">terminal (REJECTED, DONE, ABORTED, EXPIRED)</text>
+    <line x1="0" y1="34" x2="30" y2="34" class="edge" stroke-dasharray="5 4" />
+    <text x="36" y="38" class="legend">timeout (lazy expiry on read or explicit)</text>
+  </g>
+
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569" />
+    </marker>
+  </defs>
+</svg>

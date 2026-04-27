@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 460" font-family="ui-sans-serif, system-ui, sans-serif">
+  <style>
+    .layer { fill: #f8fafc; stroke: #475569; stroke-width: 1.5; }
+    .layer-app { fill: #ecfeff; stroke: #0e7490; }
+    .layer-sdk { fill: #f0f9ff; stroke: #0369a1; }
+    .layer-proto { fill: #f5f3ff; stroke: #5b21b6; }
+    .layer-transport { fill: #fef3c7; stroke: #92400e; }
+    .title { font-weight: 700; font-size: 14px; fill: #0f172a; }
+    .sub { font-size: 12px; fill: #334155; }
+    .lbl { font-size: 11px; fill: #475569; font-style: italic; }
+    .arr { fill: none; stroke: #475569; stroke-width: 1.5; }
+  </style>
+
+  <!-- Title -->
+  <text x="360" y="28" text-anchor="middle" class="title" font-size="16">Polypact reference architecture</text>
+
+  <!-- Application layer -->
+  <rect x="40" y="56" width="640" height="64" rx="8" class="layer layer-app" />
+  <text x="360" y="80" text-anchor="middle" class="title">Application Layer</text>
+  <text x="360" y="100" text-anchor="middle" class="sub">user code · agents · orchestrators · case studies</text>
+
+  <!-- arrow -->
+  <path d="M 360 122 L 360 144" class="arr" marker-end="url(#arrow)" />
+  <text x="372" y="138" class="lbl">uses</text>
+
+  <!-- SDK layer -->
+  <rect x="40" y="148" width="640" height="64" rx="8" class="layer layer-sdk" />
+  <text x="360" y="172" text-anchor="middle" class="title">SDK Layer</text>
+  <text x="220" y="194" text-anchor="middle" class="sub">polypact.client</text>
+  <text x="500" y="194" text-anchor="middle" class="sub">polypact.server</text>
+
+  <path d="M 360 214 L 360 236" class="arr" marker-end="url(#arrow)" />
+  <text x="372" y="230" class="lbl">orchestrates</text>
+
+  <!-- Protocol layer -->
+  <rect x="40" y="240" width="640" height="100" rx="8" class="layer layer-proto" />
+  <text x="360" y="264" text-anchor="middle" class="title">Protocol Layer</text>
+  <g class="sub">
+    <rect x="60" y="280" width="100" height="40" rx="6" fill="#fff" stroke="#5b21b6" />
+    <text x="110" y="305" text-anchor="middle">manifest</text>
+    <rect x="172" y="280" width="120" height="40" rx="6" fill="#fff" stroke="#5b21b6" />
+    <text x="232" y="305" text-anchor="middle">negotiation</text>
+    <rect x="304" y="280" width="100" height="40" rx="6" fill="#fff" stroke="#5b21b6" />
+    <text x="354" y="305" text-anchor="middle">transfer</text>
+    <rect x="416" y="280" width="100" height="40" rx="6" fill="#fff" stroke="#5b21b6" />
+    <text x="466" y="305" text-anchor="middle">discovery</text>
+    <rect x="528" y="280" width="100" height="40" rx="6" fill="#fff" stroke="#5b21b6" />
+    <text x="578" y="305" text-anchor="middle">identity</text>
+  </g>
+
+  <path d="M 360 342 L 360 364" class="arr" marker-end="url(#arrow)" />
+  <text x="372" y="358" class="lbl">uses</text>
+
+  <!-- Transport layer -->
+  <rect x="40" y="368" width="640" height="64" rx="8" class="layer layer-transport" />
+  <text x="360" y="392" text-anchor="middle" class="title">Transport Layer</text>
+  <text x="360" y="412" text-anchor="middle" class="sub">JSON-RPC 2.0 · HTTP · SSE · FastAPI · httpx</text>
+
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569" />
+    </marker>
+  </defs>
+</svg>

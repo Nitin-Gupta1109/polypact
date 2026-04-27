@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 620" font-family="ui-sans-serif, system-ui, sans-serif">
+  <style>
+    .actor { fill: #e0f2fe; stroke: #0369a1; stroke-width: 1.5; }
+    .lifeline { stroke: #94a3b8; stroke-width: 1; stroke-dasharray: 4 4; }
+    .msg { fill: none; stroke: #1e293b; stroke-width: 1.5; }
+    .msg-return { stroke-dasharray: 5 4; }
+    .label { font-size: 13px; font-weight: 700; fill: #0f172a; }
+    .msg-label { font-size: 12px; fill: #1e293b; }
+    .phase { font-size: 11px; fill: #475569; font-style: italic; }
+    .title { font-size: 16px; font-weight: 700; fill: #0f172a; }
+  </style>
+
+  <text x="380" y="28" text-anchor="middle" class="title">Message flow: lease scenario (PROTOCOL_SPEC.md §5–§6)</text>
+
+  <!-- Actor boxes -->
+  <rect x="80" y="50" width="180" height="40" rx="8" class="actor" />
+  <text x="170" y="76" text-anchor="middle" class="label">Initiator (CompanyA)</text>
+
+  <rect x="500" y="50" width="180" height="40" rx="8" class="actor" />
+  <text x="590" y="76" text-anchor="middle" class="label">Provider (CompanyB)</text>
+
+  <!-- Lifelines -->
+  <line x1="170" y1="90" x2="170" y2="600" class="lifeline" />
+  <line x1="590" y1="90" x2="590" y2="600" class="lifeline" />
+
+  <!-- Phase: Discovery -->
+  <text x="40" y="130" class="phase">Discovery</text>
+  <line x1="170" y1="125" x2="590" y2="125" class="msg" marker-end="url(#arr)" />
+  <text x="380" y="118" text-anchor="middle" class="msg-label">GET /.well-known/agent.json</text>
+  <line x1="590" y1="155" x2="170" y2="155" class="msg msg-return" marker-end="url(#arr)" />
+  <text x="380" y="148" text-anchor="middle" class="msg-label">AgentCard (with polypact extension)</text>
+  <line x1="170" y1="190" x2="590" y2="190" class="msg" marker-end="url(#arr)" />
+  <text x="380" y="183" text-anchor="middle" class="msg-label">GET /polypact/v1/manifests</text>
+  <line x1="590" y1="220" x2="170" y2="220" class="msg msg-return" marker-end="url(#arr)" />
+  <text x="380" y="213" text-anchor="middle" class="msg-label">[ SkillManifest ]</text>
+
+  <!-- Phase: Negotiation -->
+  <text x="40" y="265" class="phase">Negotiation</text>
+  <line x1="170" y1="260" x2="590" y2="260" class="msg" marker-end="url(#arr)" />
+  <text x="380" y="253" text-anchor="middle" class="msg-label">polypact.negotiate.propose { skill, mode, terms }</text>
+  <line x1="590" y1="290" x2="170" y2="290" class="msg msg-return" marker-end="url(#arr)" />
+  <text x="380" y="283" text-anchor="middle" class="msg-label">{ negotiation_id, state: PROPOSED, expires_at }</text>
+
+  <line x1="170" y1="325" x2="590" y2="325" class="msg" marker-end="url(#arr)" />
+  <text x="380" y="318" text-anchor="middle" class="msg-label">polypact.negotiate.counter_propose { new terms }</text>
+  <line x1="590" y1="355" x2="170" y2="355" class="msg msg-return" marker-end="url(#arr)" />
+  <text x="380" y="348" text-anchor="middle" class="msg-label">{ state: PROPOSED, expires_at: reset }</text>
+
+  <line x1="170" y1="390" x2="590" y2="390" class="msg" marker-end="url(#arr)" />
+  <text x="380" y="383" text-anchor="middle" class="msg-label">polypact.negotiate.accept</text>
+  <line x1="590" y1="420" x2="170" y2="420" class="msg msg-return" marker-end="url(#arr)" />
+  <text x="380" y="413" text-anchor="middle" class="msg-label">Agreement (signed: provider Ed25519/JWS)</text>
+
+  <!-- Phase: Verification -->
+  <text x="40" y="465" class="phase">Verification</text>
+  <line x1="170" y1="460" x2="590" y2="460" class="msg" marker-end="url(#arr)" />
+  <text x="380" y="453" text-anchor="middle" class="msg-label">GET /.well-known/did.json   (provider DID document)</text>
+  <line x1="590" y1="490" x2="170" y2="490" class="msg msg-return" marker-end="url(#arr)" />
+  <text x="380" y="483" text-anchor="middle" class="msg-label">DidDocument with verificationMethod</text>
+
+  <!-- Phase: Invocation -->
+  <text x="40" y="535" class="phase">Invocation (under lease)</text>
+  <line x1="170" y1="530" x2="590" y2="530" class="msg" marker-end="url(#arr)" />
+  <text x="380" y="523" text-anchor="middle" class="msg-label">polypact.task.invoke { agreement_id, input } × N</text>
+  <line x1="590" y1="560" x2="170" y2="560" class="msg msg-return" marker-end="url(#arr)" />
+  <text x="380" y="553" text-anchor="middle" class="msg-label">{ output }   (lease budget decremented server-side)</text>
+  <line x1="170" y1="595" x2="590" y2="595" class="msg" marker-end="url(#arr)" />
+  <text x="380" y="588" text-anchor="middle" class="msg-label">invoke #(max+1) → -32003 Agreement violated (exhausted)</text>
+
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#1e293b" />
+    </marker>
+  </defs>
+</svg>
