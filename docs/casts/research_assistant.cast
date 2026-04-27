@@ -1,0 +1,13 @@
+{"version":3,"term":{"cols":80,"rows":24},"timestamp":1777293364,"idle_time_limit":0.4,"command":"uv run python -m examples.02_research_assistant.main 2>/dev/null","env":{"SHELL":"/bin/zsh"}}
+[0.392, "o", "========================================================================\r\nPolypact case study 02 — Research Assistant (TEACH)\r\n========================================================================\r\n"]
+[0.025, "o", "\r\n[Step 1] Discovery\r\n"]
+[0.001, "o", "  Agent:        ResearchSpecialist\r\n  Skill:        did:web:research.example.org#literature-review-template\r\n  Modes:        ['teach']\r\n  (no delegate/lease offered — provider only teaches)\r\n\r\n[Step 2] Negotiate a teach agreement\r\n"]
+[0.003, "o", "  AGREED:       agreement_id=ebb462d9-62c8-4e6f-aa8e-64f6c6715c51\r\n  signed by:    ['did:web:research.example.org']\r\n\r\n[Step 3] Verify agreement signature via did:web\r\n"]
+[0.000, "o", "  signature: VERIFIED\r\n\r\n[Step 4] Receive teach artifact\r\n"]
+[0.001, "o", "  artifact_type: prompt_template\r\n  license:       {'use': 'internal_only', 'redistribution': False, 'modify': True, 'expires': 'agreement_validity', 'attribution_required': True}\r\n"]
+[0.000, "o", "  template (excerpt):\r\n"]
+[0.000, "o", "    You are a research analyst writing a literature review on {topic}.\r\n\r\n    Your output MUST be JSON of the form:\r\n      {{\r\n        \"claim_summary\": \"<single-sentence framing of the consensus position>\",\r\n        \"primary_sources\": [\"<url1>\", \"<url2>\", ...],   // 3-7 entries\r\n      ...\r\n  input_variables: ['topic']\r\n\r\n[Step 5] Generalist runs the template locally"]
+[0.000, "o", "\r\n"]
+[0.000, "o", "  topic:    'LLM agent federation'\r\n  rendered prompt: 650 chars  (would be sent to local LLM)\r\n  (LLM call elided in demo; protocol value is the transfer.)\r\n\r\n------------------------------------------------------------------------\r\n"]
+[0.000, "o", "  Provider's expertise transferred under license; no per-call billing or further provider involvement.\r\n========================================================================\r\n"]
+[0.028, "x", "0"]

@@ -73,15 +73,41 @@ A typical lease flow: discover → negotiate → verify the signed agreement →
 
 ## See it run
 
-The lease case study, end-to-end: discovery, counter-proposal, signed agreement, 50 invocations under budget, and the 51st rejected with `-32003 Agreement violated`.
+Three runnable case studies — one per transfer mode. The lease example below auto-plays; the other two are tucked into expandable sections so the page stays scannable.
+
+### Lease — invoice extraction
+
+Discovery, counter-proposal, signed agreement, 50 invocations under budget, and the 51st rejected with `-32003 Agreement violated`.
 
 ![Invoice extraction case study](docs/casts/invoice_extraction.gif)
-
-Reproduce locally:
 
 ```bash
 uv run python -m examples.01_invoice_extraction.main
 ```
+
+<details>
+<summary><strong>Teach — research assistant</strong> (click to expand)</summary>
+
+A specialist transfers a literature-review prompt template under license; the generalist renders it locally with no further provider involvement.
+
+![Research assistant case study](docs/casts/research_assistant.gif)
+
+```bash
+uv run python -m examples.02_research_assistant.main
+```
+</details>
+
+<details>
+<summary><strong>Compose — logistics pipeline</strong> (click to expand)</summary>
+
+Three specialist agents (routing, inventory, ETA) plus a fulfillment orchestrator. The client negotiates compose, and the orchestrator type-checks the pipeline and emits one composite skill manifest.
+
+![Logistics pipeline case study](docs/casts/logistics_pipeline.gif)
+
+```bash
+uv run python -m examples.03_logistics_pipeline.main
+```
+</details>
 
 ## Quick start
 

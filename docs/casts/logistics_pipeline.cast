@@ -1,0 +1,13 @@
+{"version":3,"term":{"cols":80,"rows":24},"timestamp":1777293364,"idle_time_limit":0.4,"command":"uv run python -m examples.03_logistics_pipeline.main 2>/dev/null","env":{"SHELL":"/bin/zsh"}}
+[0.221, "o", "========================================================================\r\nPolypact case study 03 — Logistics Pipeline (COMPOSE)\r\n========================================================================\r\n"]
+[0.021, "o", "\r\n[Step 1] Discover three specialist agents\r\n"]
+[0.001, "o", "  RoutingAgent: did:web:routing.example.com#optimize-route\r\n"]
+[0.000, "o", "  InventoryAgent: did:web:inventory.example.com#check-stock\r\n"]
+[0.001, "o", "  ETAAgent: did:web:eta.example.com#compute-eta\r\n\r\n[Step 2] Negotiate compose with the FulfillmentOrchestrator\r\n"]
+[0.000, "o", "  orchestrator: FulfillmentOrchestrator\r\n  modes:        ['delegate', 'compose']\r\n"]
+[0.001, "o", "  AGREED:       c9c938a9-f0e4-439a-8cde-58386ec073a8\r\n  signed by:    ['did:web:fulfill.example.com']\r\n\r\n[Step 3] Verify agreement signature via did:web\r\n"]
+[0.001, "o", "  signature: VERIFIED\r\n\r\n[Step 4] Receive synthesized composite manifest\r\n"]
+[0.000, "o", "  id:        did:web:fulfill.example.com#composite-c9c938a9\r\n  name:      Composite (sequential) of 3 skills\r\n  inputs:    ['shipments']\r\n             (https://schemas.example.com/shipment-list.json)\r\n  outputs:   ['stops_with_etas']\r\n"]
+[0.000, "o", "             (https://schemas.example.com/stops-with-etas.json)\r\n  type-check: PASS — 2 sequential edges verified per §3.3\r\n\r\n------------------------------------------------------------------------\r\n  Three specialist skills exposed to the client as a single composite skill,\r\n  type-checked at composition time. Client now sees one skill at the orchestrator,\r\n  not three. (Cross-agent invocation is the next protocol layer.)\r\n"]
+[0.000, "o", "========================================================================\r\n"]
+[0.028, "x", "0"]
