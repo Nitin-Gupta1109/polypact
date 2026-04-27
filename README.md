@@ -6,7 +6,6 @@ Polypact is a federation layer. It does **not** replace your agent runtime — w
 
 It extends [Google A2A](https://github.com/a2aproject/A2A) with primitives for agents to **lend, teach, and compose** capabilities — going beyond opaque task delegation to support genuine skill sharing across trust boundaries.
 
-This repository accompanies a research paper (in preparation).
 
 ## What's different
 
