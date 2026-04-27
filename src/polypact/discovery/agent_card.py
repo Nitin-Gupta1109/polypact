@@ -16,8 +16,8 @@ from pydantic import BaseModel, ConfigDict, Field
 POLYPACT_VERSION: Literal["0.1"] = "0.1"
 """Polypact protocol version this implementation supports."""
 
-SUPPORTED_CONFORMANCE_LEVELS: tuple[int, ...] = (1,)
-"""Conformance levels (PROTOCOL_SPEC.md §1.2). Phase 1 ships only Level 1."""
+SUPPORTED_CONFORMANCE_LEVELS: tuple[int, ...] = (1, 2)
+"""Conformance levels (PROTOCOL_SPEC.md §1.2). Phase 2 supports Levels 1 and 2."""
 
 
 class PolypactExtension(BaseModel):

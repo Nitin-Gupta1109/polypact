@@ -2,7 +2,7 @@
 
 > Build in phases. After each phase, run all tests, update `DESIGN_NOTES.md` if needed, commit, tag, and stop to confirm before the next phase.
 
-**Current phase: 2**
+**Current phase: 3**
 
 ---
 
@@ -48,19 +48,19 @@
 
 ---
 
-## Phase 2 — Composition Compatibility + Delegate (Conformance Level 2)
+## Phase 2 — Composition Compatibility + Delegate (Conformance Level 2) ✅
 
 **Goal:** Agents can check skill compatibility and perform basic task delegation.
 
 **Tasks:**
-- [ ] Implement `polypact.manifest.compatibility` — sequential and parallel composition checks per §3.3
-- [ ] Add `polypact.discover.check_composition` RPC method
-- [ ] Implement `polypact.transfer.delegate` — basic task invocation
-- [ ] Implement `polypact.task.invoke` RPC
-- [ ] Server-side skill registration: `@app.skill(...)` decorator in `server.py`
-- [ ] Client-side delegation in `polypact.client.invoke_skill`
-- [ ] Unit tests for compatibility logic
-- [ ] Integration test: Agent A delegates a task to Agent B, gets result back
+- [x] Implement `polypact.manifest.compatibility` — sequential and parallel composition checks per §3.3
+- [x] Add `polypact.discover.check_composition` RPC method
+- [x] Implement `polypact.transfer.delegate` — basic task invocation
+- [x] Implement `polypact.task.invoke` RPC
+- [x] Server-side skill registration: `@app.skill(...)` decorator in `server.py`
+- [x] Client-side delegation in `polypact.client.invoke_skill`
+- [x] Unit tests for compatibility logic
+- [x] Integration test: Agent A delegates a task to Agent B, gets result back
 
 **Done when:**
 - Compatibility check returns correct judgments for at least 5 test cases

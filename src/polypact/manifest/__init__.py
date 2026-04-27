@@ -1,5 +1,13 @@
-"""Skill manifest schemas, validation, and storage."""
+"""Skill manifest schemas, validation, storage, and compatibility."""
 
+from polypact.manifest.compatibility import (
+    CompatibilityReport,
+    FieldMatch,
+    SchemaRelations,
+    check_composition,
+    check_parallel,
+    check_sequential,
+)
 from polypact.manifest.registry import ManifestRegistry, ManifestStore
 from polypact.manifest.schemas import (
     SLA,
@@ -23,10 +31,12 @@ from polypact.manifest.validation import validate_manifest
 __all__ = [
     "SLA",
     "SUPPORTED_MANIFEST_VERSIONS",
+    "CompatibilityReport",
     "ComposeKind",
     "ComposeMode",
     "DataHandling",
     "DelegateMode",
+    "FieldMatch",
     "IOField",
     "IOSpec",
     "LeaseMode",
@@ -34,9 +44,13 @@ __all__ = [
     "ManifestStore",
     "Owner",
     "Pricing",
+    "SchemaRelations",
     "SkillManifest",
     "TeachMode",
     "Terms",
     "TransferModes",
+    "check_composition",
+    "check_parallel",
+    "check_sequential",
     "validate_manifest",
 ]

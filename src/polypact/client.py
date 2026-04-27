@@ -1,21 +1,35 @@
 """Polypact client SDK.
 
-In Phase 1, :class:`PolypactClient` covers Level-1 discovery: fetching an
-Agent Card and listing/fetching manifests. Negotiation, invocation, and
-transfer methods land in later phases.
+Phase 1 covered Level-1 discovery (Agent Card + manifest list/fetch).
+Phase 2 adds Level-2 calls: ``invoke_skill`` (delegate-mode invocation) and
+``check_composition``.
 """
 
 from __future__ import annotations
 
+import uuid
 from types import TracebackType
-from typing import Self
+from typing import Any, Self
 from urllib.parse import quote
 
 import httpx
 
 from polypact.discovery import AgentCard
-from polypact.manifest import SkillManifest
+from polypact.errors import PolypactError, UnknownSkillError
+from polypact.manifest import CompatibilityReport, ComposeKind, SkillManifest
 from polypact.transport import HttpTransport
+from polypact.transport.errors import INTERNAL_ERROR
+
+_RPC_PATH = "/polypact/v1/rpc"
+
+
+class RemoteError(PolypactError):
+    """Raised when a remote agent returns a JSON-RPC error envelope."""
+
+
+_KNOWN_DOMAIN_CODES: dict[int, type[PolypactError]] = {
+    UnknownSkillError.code: UnknownSkillError,
+}
 
 
 class PolypactClient:
@@ -82,3 +96,58 @@ class PolypactClient:
         url = f"{card.polypact.manifests_url}/{encoded}"
         body = await self._transport.get_json(url)
         return SkillManifest.model_validate(body)
+
+    async def invoke_skill(
+        self,
+        card: AgentCard,
+        skill_id: str,
+        payload: dict[str, Any],
+    ) -> dict[str, Any]:
+        """Invoke a delegate-mode skill on the agent described by ``card``.
+
+        Phase 2 ships ``skill_id``-keyed invocation; Phase 3 will add an
+        ``agreement_id``-keyed form gated by negotiated terms.
+        """
+        params = {
+            "agent_id": self.my_agent_id,
+            "trace_id": str(uuid.uuid4()),
+            "skill_id": skill_id,
+            "input": payload,
+        }
+        result = await self._call(card, "polypact.task.invoke", params)
+        output: dict[str, Any] = result["output"]
+        return output
+
+    async def check_composition(
+        self,
+        card: AgentCard,
+        skill_ids: list[str],
+        mode: ComposeKind,
+    ) -> CompatibilityReport:
+        """Ask the remote agent to type-check a composition of its skills."""
+        params = {
+            "agent_id": self.my_agent_id,
+            "trace_id": str(uuid.uuid4()),
+            "skill_ids": skill_ids,
+            "mode": mode,
+        }
+        result = await self._call(card, "polypact.discover.check_composition", params)
+        return CompatibilityReport.model_validate(result)
+
+    async def _call(
+        self,
+        card: AgentCard,
+        method: str,
+        params: dict[str, Any],
+    ) -> dict[str, Any]:
+        rpc_url = f"{card.url.rstrip('/')}{_RPC_PATH}"
+        envelope = await self._transport.call(rpc_url, method, params)
+        if "error" in envelope:
+            err = envelope["error"]
+            code = err.get("code", INTERNAL_ERROR)
+            message = err.get("message", "remote error")
+            data = err.get("data")
+            exc_cls = _KNOWN_DOMAIN_CODES.get(code, RemoteError)
+            raise exc_cls(message, data=data)
+        result: dict[str, Any] = envelope["result"]
+        return result
